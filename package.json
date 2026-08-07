@@ -1,36 +1,3 @@
-# dotnet-unified-poc
-
-Use this repo as a bootstrap pattern for a fresh project that needs Biome + shared config.
-
-## Fresh clone flow
-
-1. Clone the repo:
-   ```bash
-   git clone --recurse-submodules <URL>
-   ```
-2. If this repo only has `package.json` at first, keep it that way.
-3. Run:
-   ```bash
-   npm run setup
-   ```
-4. That will:
-   - clone `formatter-common-config` into `formatter-common-config/` if missing
-   - run `npm install`
-   - create `.vscode/settings.json`
-   - create `.vscode/extensions.json`
-   - copy the shared Biome config to root `biome.json`
-5. Create or edit any JSON file.
-6. Run:
-   ```bash
-   npm run format
-   ```
-7. In VS Code, save the file to format on save.
-
-## package.json pattern
-
-Use this script setup:
-
-```json
 {
   "name": "js-unified-poc",
   "scripts": {
@@ -43,14 +10,3 @@ Use this script setup:
     "prettier": "^3.9.6"
   }
 }
-```
-
-## Can this be copied to other projects?
-
-Yes, if the new project has the same idea:
-
-- a `package.json`
-- Biome installed as a dev dependency
-- access to `formatter-common-config`
-
-Then the same `setup` and `format` pattern can be reused.
