@@ -1,0 +1,11 @@
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+node_modules/
+formatter-common-config/
+.DS_Store
+*.log
+*.user
+*.userosscache
+*.sln.docstates
