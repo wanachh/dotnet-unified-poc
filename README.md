@@ -42,7 +42,8 @@ no matter which formatter it is:
 {
   "emeraldwalk.runonsave": {
     "commands": [
-      { "match": ".*", "isAsync": false, "cmd": "npx biome format --write ${file}" }
+      { "match": "\\.(js|jsx|ts|tsx|json|jsonc|css|html)$", "isAsync": false, "cmd": "npx biome format --write ${file}" },
+      { "match": "\\.cs$", "isAsync": false, "cmd": "dotnet format --include ${relativeFile}" }
     ]
   }
 }
@@ -51,6 +52,26 @@ no matter which formatter it is:
 This is committed to the repo, so every teammate gets the exact same on-save behavior —
 and later if we add ESLint or another tool, we just add another command entry here
 instead of installing more editor-specific extensions.
+
+### C#/.NET formatting
+
+`dotnet format` (built into the .NET SDK, no extra install needed) formats `.cs` files
+using the shared `.editorconfig` — copied to the repo root by `npm run setup`. It needs
+exactly one `.sln`/`.slnx` file at the repo root to auto-discover the project(s); this
+repo ships `dotnet-unified-poc.slnx` + a sample `src/App` project for that reason. If you
+add more C# projects, add them to the solution with `dotnet sln add <path-to-csproj>`.
+
+### If save still isn't formatting, check:
+
+1. **Is the extension actually installed and enabled?** Open the Extensions panel
+   (`Cmd+Shift+X`), search "Run on Save", confirm `emeraldwalk.runonsave` is installed —
+   VS Code only prompts a suggestion, it doesn't auto-install.
+2. **Reload the window** after installing (`Cmd+Shift+P` → "Developer: Reload Window").
+3. **Check the Output panel** (`Cmd+Shift+U`) → dropdown → "Run On Save" channel — it
+   logs the command it ran and any errors.
+4. **Test the exact command manually** in a terminal at the repo root, e.g.
+   `npx biome format --write src/index.json` or `dotnet format --include src/App/Program.cs`
+   — if it fails there, it will fail in the extension too.
 
 ### Zero-extension alternative
 
