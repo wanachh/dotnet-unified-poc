@@ -3,7 +3,7 @@ import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const ignoreSegments = ["node_modules", ".git", "formatter-common-config", "dist", "bin", "obj"];
+const ignoreSegments = ["node_modules", ".git", "formatter-common-config", "config", "dist", "bin", "obj"];
 const timers = new Map();
 const DEBOUNCE_MS = 150;
 

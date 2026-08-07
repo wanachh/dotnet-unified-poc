@@ -2,9 +2,14 @@
   "emeraldwalk.runonsave": {
     "commands": [
       {
-        "match": ".*",
+        "match": "\\.(js|jsx|ts|tsx|json|jsonc|css|html)$",
         "isAsync": false,
         "cmd": "npx biome format --write ${file}"
+      },
+      {
+        "match": "\\.cs$",
+        "isAsync": false,
+        "cmd": "dotnet format --include ${relativeFile}"
       }
     ]
   }
