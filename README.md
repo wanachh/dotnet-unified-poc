@@ -72,6 +72,11 @@ add more C# projects, add them to the solution with `dotnet sln add <path-to-csp
 4. **Test the exact command manually** in a terminal at the repo root, e.g.
    `npx biome format --write src/index.json` or `dotnet format --include src/App/Program.cs`
    — if it fails there, it will fail in the extension too.
+5. **Opened multiple repos in one VS Code window?** (e.g. a parent folder containing
+   this repo alongside others) — VS Code only reads `.vscode/settings.json` from the
+   window's actual root folder, so this repo's own settings get ignored. Either open
+   this repo directly as its own window (`File > Open Folder` → this repo), or see the
+   multi-repo workspace config documented one level up in the parent folder's `README.md`.
 
 ### Zero-extension alternative
 
