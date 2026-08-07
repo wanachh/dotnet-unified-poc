@@ -73,10 +73,59 @@ add more C# projects, add them to the solution with `dotnet sln add <path-to-csp
    `npx biome format --write src/index.json` or `dotnet format --include src/App/Program.cs`
    — if it fails there, it will fail in the extension too.
 5. **Opened multiple repos in one VS Code window?** (e.g. a parent folder containing
-   this repo alongside others) — VS Code only reads `.vscode/settings.json` from the
-   window's actual root folder, so this repo's own settings get ignored. Either open
-   this repo directly as its own window (`File > Open Folder` → this repo), or see the
-   multi-repo workspace config documented one level up in the parent folder's `README.md`.
+   this repo alongside `js-unified-poc`, `formatter-common-config`, etc.) — VS Code only
+   reads `.vscode/settings.json` from the window's actual root folder, so this repo's own
+   settings get ignored. See "Multi-repo workspace setup" below for the fix.
+
+### Multi-repo workspace setup
+
+If you open a **parent folder** containing this repo alongside other repos (all in one
+VS Code window, instead of opening `dotnet-unified-poc` directly), VS Code reads
+`<parent>/.vscode/settings.json`, not this repo's own `.vscode/settings.json` — so
+nothing will format on save unless you add equivalent config at that parent level.
+
+Recommended: just open `dotnet-unified-poc` directly as its own window
+(`File > Open Folder` → pick this repo, not its parent) — no extra config needed
+beyond what `npm run setup` already generates.
+
+If you do need everything open together in one window, create
+`<parent-folder>/.vscode/settings.json` (this file is local to your machine only, not
+part of any repo) with per-repo routing, e.g.:
+
+```json
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "dotnet-unified-poc/.*\\.(js|jsx|ts|tsx|json|jsonc|css|html)$",
+        "isAsync": false,
+        "cmd": "cd \"${workspaceFolder}/dotnet-unified-poc\" && npx biome format --write \"${file}\""
+      },
+      {
+        "match": "dotnet-unified-poc/.*\\.cs$",
+        "isAsync": false,
+        "cmd": "cd \"${workspaceFolder}/dotnet-unified-poc\" && dotnet format --include \"$(echo ${relativeFile} | sed 's#^dotnet-unified-poc/##')\""
+      },
+      {
+        "match": "^js-unified-poc/.*\\.(js|jsx|ts|tsx|json|jsonc|css|html)$",
+        "isAsync": false,
+        "cmd": "cd \"${workspaceFolder}/js-unified-poc\" && npx biome format --write \"${file}\""
+      },
+      {
+        "match": "^formatter-common-config/.*\\.(js|jsx|ts|tsx|json|jsonc|css|html)$",
+        "isAsync": false,
+        "cmd": "cd \"${workspaceFolder}/formatter-common-config\" && npx biome format --write \"${file}\""
+      }
+    ]
+  }
+}
+```
+
+Each `match` is a regex tested against the file's path relative to the parent folder.
+Each `cmd` first `cd`s into the correct repo (so `npx`/`dotnet` find that repo's local
+`node_modules`/`.editorconfig`/`.sln`), then formats. The `sed` in the `.cs` entry strips
+the `dotnet-unified-poc/` prefix since `dotnet format --include` needs a path relative to
+this repo's root, not to the parent folder.
 
 ### Zero-extension alternative
 
