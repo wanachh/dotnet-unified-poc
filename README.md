@@ -19,29 +19,50 @@ Use this repo as a bootstrap pattern for a fresh project that needs Biome + shar
    - create `.vscode/settings.json`
    - create `.vscode/extensions.json`
    - copy the shared Biome config to root `biome.json`
-   - generate `scripts/watch-format.mjs` (auto-format-on-save watcher)
-5. Create or edit any JSON file.
-6. Format on demand:
+   - generate `scripts/watch-format.mjs` (optional alternative watcher, see below)
+5. Install the **"Run on Save" (`emeraldwalk.runonsave`)** VS Code extension (VS Code
+   will prompt you via the recommendation in `.vscode/extensions.json`).
+6. Create or edit any JSON file, save it — it auto-formats with Biome.
+7. Format on demand:
    ```bash
    npm run format
    ```
 
-## Auto-format on save (no VS Code extension required)
+## Format on save — how it actually works
 
-`editor.formatOnSave` in VS Code only works if the Biome (or Prettier) extension is
-installed — it can't run an external formatter on its own. If you don't want to install
-any editor extension, run a background watcher instead:
+VS Code's `editor.formatOnSave` alone is only a *trigger*; it needs some extension to
+register as the real formatter. Unlike Vim (`autocmd BufWritePre ... !command`), VS Code
+has no built-in "run any shell command on save" hook.
+
+`emeraldwalk.runonsave` is a thin, generic extension that fills that exact gap — it reads
+a shell command straight from `.vscode/settings.json` and runs it whenever you save,
+no matter which formatter it is:
+
+```json
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      { "match": ".*", "isAsync": false, "cmd": "npx biome format --write ${file}" }
+    ]
+  }
+}
+```
+
+This is committed to the repo, so every teammate gets the exact same on-save behavior —
+and later if we add ESLint or another tool, we just add another command entry here
+instead of installing more editor-specific extensions.
+
+### Zero-extension alternative
+
+If you don't want to install *any* VS Code extension at all, run the background watcher
+instead:
 
 ```bash
 npm run watch
 ```
 
-Leave this running in a terminal. It watches every file in the project and runs
-`biome format --write` automatically the instant you save, using the same `biome.json`
-rules — completely independent of the editor. Stop it with `Ctrl+C`.
-
-If you do install the Biome VS Code extension, `editor.formatOnSave` will also work
-directly in the editor and you won't need `npm run watch`.
+Leave this running in a terminal. It watches every file and runs `biome format --write`
+the instant you save, completely independent of the editor. Stop it with `Ctrl+C`.
 
 ## package.json pattern
 
